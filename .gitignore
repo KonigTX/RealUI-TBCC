@@ -1,20 +1,5 @@
-# Documentation and dev notes (not addon files)
-docs/
-gui/
-
 # Scripts used for development
 AddOns/scripts/
-
-# AI alignment / porting files (dev notes)
-AddOns/errs.txt
-AddOns/PHASE1_BOOTSTRAP_COMPLETE.md
-AddOns/TBCC_ERRORS_LOG.md
-AddOns/TBCC_ERRORS_ROUND2.md
-AddOns/TBCC_ERRORS_ROUND3_FIXES.md
-AddOns/TBCC_ERRORS_ROUND4_FIXES.md
-AddOns/TBCC_FIXES_APPLIED.md
-AddOns/TBCC_PORTING_GUIDE.md
-AddOns/TESTING_PHASE1.md
 
 # OS generated files
 .DS_Store
