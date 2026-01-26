@@ -73,6 +73,7 @@ To my delight, the UI loaded the Welcome Screen on the very first run. While it'
 - **MailFrame** - May error when opening mail
 - **TradeFrame** - Some button textures missing
 - **Frame Movement** - Some frames move, some don't
+- **Bag Frame** - Ctrl+Shift+Alt Right Click to assign a filter bag doesn't work
 
 ## Credits
 
