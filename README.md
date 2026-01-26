@@ -14,6 +14,8 @@ This is a functional but imperfect port.
 
 **Broken / W.I.P:** Aurora (the skinning engine) is currently unstable. Some frames may not position correctly or may look "off." This is likely due to conflicts with the modern engine's EditMode backend vs. TBC's lack of it.
 
+Various other bugs exist that I'll fix as time permits.
+
 ---
 
 ## Installation
