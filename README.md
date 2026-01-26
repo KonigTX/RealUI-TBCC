@@ -29,7 +29,7 @@ Various other undocumented bugs!
 
 3. **Copy** all addon folders to your WoW TBC Classic AddOns directory:
    ```
-   World of Warcraft\_classic_\Interface\AddOns\
+   World of Warcraft\_anniversary_\Interface\AddOns\
    ```
 
 4. **Verify** your folder structure looks like:
