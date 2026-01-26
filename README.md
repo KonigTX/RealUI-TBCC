@@ -79,9 +79,7 @@ To my delight, the UI loaded the Welcome Screen on the very first run. While it'
 
 ## Credits
 
-RealUI was originally created by **Gethe**, **ievil**, and **Nibelheim** — without their work, this port wouldn't be possible.
-
-This port includes bundled addons from their respective authors: Bartender4 (Nevcairiel), Grid2 (Michael), Kui Nameplates (Kesava), Raven (Tomber), Masque (StormFX), and others.
+Thank you to **Nibelheim**, **Gethe**, and **ievil** — without their work, this port wouldn't be possible.
 
 ---
 
