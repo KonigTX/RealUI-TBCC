@@ -10,11 +10,10 @@ RealUI is a minimalist UI replacement that provides a clean, efficient interface
 
 This is a functional but imperfect port.
 
-**Working:** The Welcome Screen, Unit Frames, Bartender, Bags, Menu, AFK Bar, Infobar, and Masque skins.
+**Working:** The Welcome Screen, Unit Frames, Bartender, Bags, Menu, AFK Bar, Infobar, Masque skins, and more...
 
 **Broken / W.I.P:** Aurora (the skinning engine) is currently unstable. Some frames may not position correctly or may look "off." This is likely due to conflicts with the modern engine's EditMode backend vs. TBC's lack of it.
-
-Various other undocumented bugs!
+There are various RealUI features that are still broken. I plan to fix these issues in batches -- any LUA errors or bug descriptions will help make that possible.
 
 ---
 
