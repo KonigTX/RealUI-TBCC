@@ -1,79 +1,65 @@
 # RealUI for TBC Classic (TBCC)
 
-A port of the popular [RealUI](https://www.realui.net/) addon suite for World of Warcraft: The Burning Crusade Classic.
+A port of the popular [RealUI](https://www.wowinterface.com/downloads/info16068-RealUI.html) addon suite for World of Warcraft: The Burning Crusade Classic.
 
-RealUI is a minimalist UI replacement that provides a clean, efficient interface focused on what matters during gameplay. This port brings RealUI's aesthetic and functionality to TBC Classic.
+RealUI is a minimalist UI replacement that provides a clean, efficient interface focused on what matters during gameplay. It was my favorite UI in Retail, and this port aims to bring that "at home" feel back to the TBC Classic era.
 
-## Features
+---
 
-- **Clean HUD** - Minimalist unit frames with angled health/power bars
-- **Integrated Nameplates** - Kui Nameplates with RealUI styling
-- **Action Bars** - Bartender4 integration with clean, minimal styling
-- **Raid Frames** - Grid2 with RealUI profiles for DPS and Healer layouts
-- **Aura Tracking** - Raven for buff/debuff monitoring
-- **Inventory** - Custom bag management with category filtering
-- **Combat Text** - Floating combat text with RealUI styling
-- **Aurora Skins** - UI skinning for Blizzard frames (work in progress)
-- **Infobar** - Data broker display with system information
+## ⚠️ Current Status: Alpha / Playtest
+
+This is a functional but imperfect port.
+
+**Working:** The Welcome Screen, Unit Frames, Bartender, Bags, Menu, AFK Bar, Infobar, and Masque skins.
+
+**Broken / W.I.P:** Aurora (the skinning engine) is currently unstable. Some frames may not position correctly or may look "off." This is likely due to conflicts with the modern engine's EditMode backend vs. TBC's lack of it.
+
+---
 
 ## Installation
 
-1. Download or clone this repository
-2. Copy the contents of the `AddOns` folder to your WoW TBC Classic AddOns directory:
+1. **Download** this repository (Code → Download ZIP) or clone it:
+   ```
+   git clone https://github.com/KonigTX/RealUI-TBCC.git
+   ```
+
+2. **Extract** the contents of the `AddOns` folder
+
+3. **Copy** all addon folders to your WoW TBC Classic AddOns directory:
    ```
    World of Warcraft\_classic_\Interface\AddOns\
    ```
-3. Restart WoW or `/reload` if already in-game
-4. RealUI will run the initial setup on first login
 
-## Included AddOns
+4. **Verify** your folder structure looks like:
+   ```
+   Interface/AddOns/nibRealUI/
+   Interface/AddOns/nibRealUI_Config/
+   Interface/AddOns/RealUI_Skins/
+   Interface/AddOns/Bartender4/
+   ... (and the rest)
+   ```
 
-### Core RealUI
-| Addon | Description |
-|-------|-------------|
-| **nibRealUI** | Core addon - HUD, unit frames, modules |
-| **nibRealUI_Config** | Configuration interface |
-| **RealUI_Skins** | Aurora-based UI skinning |
-| **RealUI_Bugs** | Error handler and bug reporter |
-| **RealUI_CombatText** | Floating combat text |
-| **RealUI_Inventory** | Bag and inventory management |
-| **!RealUI_Preloads** | Bootstrap loader |
+5. **Launch** WoW TBC Classic (or `/reload` if already in-game)
 
-### Bundled Third-Party AddOns
-| Addon | Description | Author |
-|-------|-------------|--------|
-| **Bartender4** | Action bar replacement | Nevcairiel |
-| **Grid2** | Raid/party frames | Michael |
-| **Kui_Nameplates** | Nameplate framework | Kesava |
-| **Raven** | Buff/debuff tracking | Tomber |
-| **Masque** | Button skinning library | StormFX |
-| **BadBoy** | Chat spam blocker | Funkydude |
-| **ClassicSpellActivations** | Spell proc highlights | d87 |
+6. **Follow** the RealUI setup wizard on first login
 
-## Known Issues
+---
 
-This is a work-in-progress port. The following issues are known:
+## The "AI Port" Story
 
-### Aurora Skins (RealUI_Skins)
-Aurora skinning is still very rough and has compatibility issues with TBC Classic:
+This project is a unique experiment: **~80% of the code was ported by AI.**
 
-- **MailFrame** - `FRAME_TITLE_HEIGHT` constant missing in TBC, causes errors when opening mail
-- **TradeFrame** - `SetNormalTexture` method missing on some trade slot buttons
-- **SpellBook** - Not yet implemented for TBC Classic
-- **PlayerChoice** - Not fully implemented
-- **BankFrame** - Limited support in Classic clients
-- **Various Blizzard frames** - Some skins may error or display incorrectly
+I utilized **Claude Code (Opus 4.5)**, **Gemini CLI**, and **Codex** to orchestrate a massive translation of the Retail codebase to the TBCC API.
 
-### General Issues
-- Some Retail-specific API calls may cause errors on first load
-- Unit frame positioning may need manual adjustment after setup
-- Grid2 profiles may need to be manually selected for healer specs
+**The Process:** We used autonomous agents to research API changes, plan the overhaul, and execute the code rewrite.
 
-### Workarounds
-If you experience errors:
-1. Use `/realui` to access settings
-2. Check RealUI_Bugs for error details
-3. Some Aurora skins can be disabled individually if problematic
+**The Quality Control:** A "Brutally Honest Critic" agent reviewed the code (it was harsh, but effective).
+
+**The Result:** To my delight, the UI loaded the Welcome Screen on the very first run. While it's not perfect—1,457 files is a lot for anyone (human or AI) to manage perfectly—it is now in a "good enough" state for adventurous users to playtest.
+
+**AI is a hell of a drug. Enjoy!**
+
+---
 
 ## Configuration
 
@@ -83,29 +69,19 @@ If you experience errors:
 - `/raven` - Raven aura settings
 - `/kui` - Kui Nameplates settings
 
-## Requirements
+## Known Issues
 
-- World of Warcraft: The Burning Crusade Classic (2.5.x)
-- Recommended resolution: 1920x1080 or higher
+- **Aurora Skins** - Frame skinning is rough; some Blizzard frames may error or display incorrectly
+- **MailFrame** - May error when opening mail
+- **TradeFrame** - Some button textures missing
+- **Frame Movement** - Some frames move, some don't
 
 ## Credits
 
-RealUI was originally created by **Nibelheim**. This TBC Classic port maintains compatibility with the original design philosophy while adapting to the Classic client.
+RealUI was originally created by **Gethe**, **ievil**, and **Nibelheim** — without their work, this port wouldn't be possible.
 
-### Third-Party Libraries
-This addon suite includes the following libraries and addons, with thanks to their respective authors:
-- Ace3 libraries (Ace community)
-- LibStub, CallbackHandler (WoW library authors)
-- LibSharedMedia (Elkano)
-- LibDataBroker (Tekkub)
-- LibQTip (Kemayo)
-- oUF (Haste)
-- Aurora (Haleth, Lightsword)
-
-## License
-
-RealUI and its components are provided under their respective licenses. See individual addon folders for specific license information.
+This port includes bundled addons from their respective authors: Bartender4 (Nevcairiel), Grid2 (Michael), Kui Nameplates (Kesava), Raven (Tomber), Masque (StormFX), and others.
 
 ---
 
-*This is an unofficial port for TBC Classic. For the official Retail version, visit [realui.net](https://www.realui.net/)*
+*This is an unofficial port for TBC Classic.*
