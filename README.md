@@ -18,7 +18,6 @@ There are various RealUI features that are still broken. I plan to fix these iss
 ![scr1](https://github.com/user-attachments/assets/59090d62-f932-4a66-922a-898a22c36519)
 ![scr2](https://github.com/user-attachments/assets/5f5e3f85-97e6-4a4c-b712-e7c479707477)
 ![scr3](https://github.com/user-attachments/assets/9fae6a51-0fc4-4715-8c41-abaeb8bdd5b9)
-<img width="525" height="745" alt="image" src="https://github.com/user-attachments/assets/a14b1e8f-6c8d-4f30-970e-81b85c9bba47" />
 
 ---
 
