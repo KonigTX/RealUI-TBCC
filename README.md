@@ -45,7 +45,7 @@ This is a functional but imperfect port.
 
 ---
 
-## The "AI Port" Story
+## AI Usage
 
 This project is a unique experiment: **~80% of the code was ported by AI.**
 
