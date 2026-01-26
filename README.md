@@ -61,7 +61,7 @@ I used autonomous agents to research API changes, plan the overhaul, and execute
 
 To my delight, the UI loaded the Welcome Screen on the very first run. While it's not perfect -- 1,457 files is a lot for anyone (human or AI) to manage perfectly -- it is now in a "good enough" state for adventurous users to playtest.
 
-**AI is a hell of a drug. Enjoy!**
+**Enjoy!**
 
 ---
 
