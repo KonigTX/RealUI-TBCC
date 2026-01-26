@@ -49,7 +49,7 @@ Various other undocumented bugs!
 
 ## AI Usage
 
-This project is a unique experiment: **~100% of the code was ported by AI.**
+This project is a unique experiment: 100% of the code was ported by AI.
 
 I utilized **Claude Code (Opus 4.5)**, **Gemini CLI**, and **Codex** to orchestrate a massive translation of the Retail codebase to the TBCC API.
 
