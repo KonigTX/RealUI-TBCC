@@ -1,0 +1,253 @@
+local _, private = ...
+
+local CombatText = private.CombatText
+local Damageclass = _G.Enum.Damageclass
+
+local GetEvent, isSpamming
+local function InitTest()
+    local random = _G.math.random
+    local player = private.player
+    local other = private.other
+
+    local function GetAmount(maxAmount)
+        return random(1, maxAmount or 5000)
+    end
+
+    local function IsCrit()
+        return random(1, 10) >= 8
+    end
+
+    local missTypes = {
+        "ABSORB",
+        "BLOCK",
+        "DEFLECT",
+        "DODGE",
+        "EVADE",
+        "IMMUNE",
+        "MISS",
+        "PARRY",
+        "REFLECT",
+        "RESIST",
+    }
+    local function GetMissType()
+        return missTypes[random(1, #missTypes)]
+    end
+
+    local spellSchools = {
+        Damageclass.MaskHoly,
+        Damageclass.MaskFire,
+        Damageclass.MaskNature,
+        Damageclass.MaskFrost,
+        Damageclass.MaskShadow,
+        Damageclass.MaskArcane,
+    }
+    local function GetSpellSchool()
+        return spellSchools[random(1, #spellSchools)]
+    end
+
+    local envTypes = {
+        "Drowning",
+        "Falling",
+        "Fatigue",
+        "Fire",
+        "Lava",
+        "Slime",
+    }
+    local function GetEnvironmentType()
+        return envTypes[random(1, #envTypes)]
+    end
+
+    local powerTypes = _G.Enum.PowerType
+    local alternatePower = _G.Enum.PowerType.Alternate
+    local function GetPowerType()
+        local powerType = random(powerTypes.Mana, powerTypes.Chi)
+        if powerType == alternatePower then
+            return powerType, random(powerTypes.Mana, powerTypes.HolyPower)
+        end
+        return powerType
+    end
+
+    local function GetPartialEffects(amount, numEffects)
+        local rand = random(1, numEffects + 1)
+        local partial = GetAmount(amount * 0.7)
+
+        if rand == 1 then
+            return 0, 0, 0
+        elseif rand == 2 then
+            return partial, 0, 0
+        elseif rand == 3 then
+            return 0, partial, 0
+        else
+            return 0, 0, partial
+        end
+    end
+
+    local events = {
+        "SWING_DAMAGE",
+        "SWING_MISSED",
+
+        "SPELL_DAMAGE",
+        "SPELL_MISSED",
+        "SPELL_HEAL",
+        "SPELL_ENERGIZE",
+    }
+
+    -- TBCC: C_SpecializationInfo and C_Spell don't exist, use fallback spell names
+    local spell1Name, spell2Name, spell3Name, spell4Name = "Attack", "Strike", "Heal", "Shield"
+
+    if _G.C_SpecializationInfo and _G.C_Spell then
+        local specID = _G.RealUI.charInfo.specs.current.id
+        local spells = _G.C_SpecializationInfo.GetSpellsDisplay(specID)
+
+        if spells and spells[1] then
+            local spell1ID = spells[1]
+            local spell1info = _G.C_Spell.GetSpellInfo(spell1ID)
+            spell1Name = spell1info and spell1info.name or spell1Name
+        end
+
+        if spells and spells[2] then
+            local spell2ID = spells[2]
+            local spell2info = _G.C_Spell.GetSpellInfo(spell2ID)
+            spell2Name = spell2info and spell2info.name or spell2Name
+        end
+
+        if spells and spells[3] then
+            local spell3ID = spells[3]
+            local spell3info = _G.C_Spell.GetSpellInfo(spell3ID)
+            spell3Name = spell3info and spell3info.name or spell3Name
+        end
+
+        if spells and spells[4] then
+            local spell4ID = spells[4]
+            local spell4info = _G.C_Spell.GetSpellInfo(spell4ID)
+            spell4Name = spell4info and spell4info.name or spell4Name
+        end
+    end
+
+    local eventArgs = {
+        SWING_DAMAGE = function()
+            local amount = GetAmount()
+            local resisted, blocked, absorbed = GetPartialEffects(amount, 3)
+            --       amount, overkill, school,         resisted, blocked, absorbed, critical, glancing, crushing, isOffHand
+            return amount, 0, _G.SCHOOL_MASK_PHYSICAL, resisted, blocked, absorbed, IsCrit(), false, false, false
+        end,
+        SWING_MISSED = function()
+            --      missType, isOffHand, amountMissed, critical
+            return GetMissType(), false, GetAmount(), false
+        end,
+
+
+        RANGE_DAMAGE = function()
+            local amount = GetAmount()
+            local resisted, blocked, absorbed = GetPartialEffects(amount, 3)
+
+            --    spellID,    spellName,        spellSchool,      amount, overkill,     school,       resisted, blocked, absorbed, critical, glancing, crushing, isOffHand
+            return spell1ID, spell1Name, _G.SCHOOL_MASK_PHYSICAL, amount, 0, _G.SCHOOL_MASK_PHYSICAL, resisted, blocked, absorbed, IsCrit(), false, false, false
+        end,
+        RANGE_MISSED = function()
+            --    spellID,    spellName,     spellSchool,     missType, isOffHand, amountMissed, critical
+            return spell1ID, spell1Name, GetSpellSchool(), GetMissType(), false, GetAmount(), false
+        end,
+
+        SPELL_DAMAGE = function()
+            local amount = GetAmount()
+            local resisted, blocked, absorbed = GetPartialEffects(amount, 3)
+            local spellSchool = GetSpellSchool()
+
+            --    spellID,          spellName,           spellSchool,      amount, overkill,     school,       resisted, blocked, absorbed, critical, glancing, crushing, isOffHand
+            return spell1ID, spell1Name, spellSchool, amount, 0, spellSchool, resisted, blocked, absorbed, IsCrit(), false, false, false
+        end,
+        SPELL_MISSED = function()
+            --    spellID,          spellName,               spellSchool,     missType, isOffHand, amountMissed, critical
+            return spell1ID, spell1Name, GetSpellSchool(), GetMissType(), false, GetAmount(), false
+        end,
+        SPELL_HEAL = function()
+            local amount = GetAmount()
+            local overhealing, absorbed = GetPartialEffects(amount, 2)
+
+            --    spellID,          spellName,              spellSchool,     amount, overhealing, absorbed, critical
+            return spell2ID, spell2Name, GetSpellSchool(), amount, overhealing, absorbed, IsCrit()
+        end,
+        SPELL_ENERGIZE = function()
+            local amount = GetAmount()
+            local overEnergize = GetPartialEffects(amount, 1)
+            local powerType, alternatePowerType = GetPowerType()
+
+            --    spellID,          spellName,              spellSchool,     amount, overEnergize, powerType, alternatePowerType
+            return spell3ID, spell3Name, GetSpellSchool(), amount, overEnergize, powerType, alternatePowerType
+        end,
+
+        SPELL_PERIODIC_DAMAGE = function()
+            local amount = GetAmount()
+            local resisted, blocked, absorbed = GetPartialEffects(amount, 3)
+            local spellSchool = GetSpellSchool()
+
+            --    spellID,          spellName,           spellSchool,      amount, overkill,     school,       resisted, blocked, absorbed, critical, glancing, crushing, isOffHand
+            return spell4ID, spell4Name, spellSchool, amount, 0, spellSchool, resisted, blocked, absorbed, IsCrit(), false, false, false
+        end,
+        SPELL_PERIODIC_MISSED = function()
+            --    spellID,          spellName,               spellSchool,     missType, isOffHand, amountMissed, critical
+            return spell4ID, spell4Name, GetSpellSchool(), GetMissType(), false, GetAmount(), false
+        end,
+
+        ENVIRONMENTAL_DAMAGE = function()
+            local amount = GetAmount()
+            local resisted, blocked, absorbed = GetPartialEffects(amount, 3)
+
+            --    environmentalType,      amount, overkill,     school,       resisted, blocked, absorbed, critical, glancing, crushing, isOffHand
+            return GetEnvironmentType(), amount, 0, GetSpellSchool(), resisted, blocked, absorbed, IsCrit(), false, false, false
+        end,
+    }
+
+    local sourceGUID, sourceName, sourceFlags, sourceRaidFlags
+    local destGUID, destName, destFlags, destRaidFlags
+    local timestamp, event, args
+    local hideCaster = false
+
+    function GetEvent()
+        if not isSpamming then
+            if random(1, 20) == 20 then
+                isSpamming = random(5, 10)
+            end
+
+            if random(1, 2) == 1 then
+                sourceGUID, sourceName, sourceFlags, sourceRaidFlags = player.guid, player.name, player.flags or "nil", player.raidFlags or "nil"
+                destGUID, destName, destFlags, destRaidFlags = other.guid, other.name, other.flags or "nil", other.raidFlags or "nil"
+            else
+                sourceGUID, sourceName, sourceFlags, sourceRaidFlags = other.guid, other.name, other.flags or "nil", other.raidFlags or "nil"
+                destGUID, destName, destFlags, destRaidFlags = player.guid, player.name, player.flags or "nil", player.raidFlags or "nil"
+            end
+
+            timestamp = _G.GetTime()
+            event = events[random(1, #events)]
+            args = eventArgs[event]
+        else
+            isSpamming = isSpamming - 1
+            if isSpamming == 0 then
+                isSpamming = false
+            end
+        end
+
+        return timestamp, event, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, args()
+    end
+end
+
+local testFrame = _G.CreateFrame("Frame")
+testFrame:Hide()
+
+local update = 0
+testFrame:SetScript("OnUpdate", function(dialog, elapsed)
+    update = update + elapsed
+    if update > (isSpamming and 0.25 or 0.5) then
+        private.FilterEvent(GetEvent())
+        update = 0
+    end
+end)
+
+function CombatText:ToggleTest()
+    if not GetEvent then
+        InitTest()
+    end
+
+    testFrame:SetShown(not testFrame:IsShown())
+end

@@ -1,0 +1,29 @@
+## Interface: 20504
+## Title: RealUI
+## Category: RealUI
+## Notes: The essential core of RealUI
+## Author: Nibelheim, Gethe, Hanshi
+## Version: 2.5.10-tbcc
+## IconTexture: Interface\AddOns\nibRealUI\Media\Icon
+## LoadWith: RealUI_Bugs, Bartender4
+## RequiredDeps: RealUI_Bugs, Blizzard_WorldMap
+## OptionalDeps: Bartender4, Grid2, LibChatAnims, LibIconFonts, LibQTip-1.0, LibRangeCheck-3.0, LibWindow-1.1, oUF, Raven
+## SavedVariables: nibRealUIDB
+## SavedVariablesPerCharacter: nibRealUICharacter
+## X-oUF: oUFembed
+## X-Website: http://www.wowinterface.com/downloads/fileinfo.php?id=16068
+## X-TBCC-Port: Phase 1 - Bootstrap (Jan 2026)
+
+# TBCC Compatibility Layer - MUST LOAD FIRST
+Libs\Fixes\TBCCompat.lua
+
+Libs\Libs.xml
+Util.lua
+Init.lua
+
+Locale.xml
+
+Core.lua
+Core.xml
+Modules.xml
+HuD.xml

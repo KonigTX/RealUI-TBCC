@@ -1,0 +1,16 @@
+## Interface: 20504
+## Title: RealUI Combat Text
+## Category: RealUI
+## Notes: Scrolling combat text designed for RealUI
+## Author: Gethe, Hanshi
+## Version: 2.5.10-tbcc
+## IconTexture: Interface\AddOns\nibRealUI\Media\Icon
+## RequiredDeps: nibRealUI
+## SavedVariables: RealUI_CombatTextDB
+
+RealUI_CombatText.lua
+Events.lua
+ScrollAreas.lua
+ScrollLines.lua
+
+TestMode.lua
