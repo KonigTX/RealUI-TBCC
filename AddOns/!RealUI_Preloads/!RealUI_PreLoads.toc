@@ -1,0 +1,8 @@
+## Interface: 20504
+## Title: !RealUI_Preloads
+## Notes: Preload essential dependencies for RealUI (TBCC - No Deprecated Blizzard APIs)
+## Author: Hanshi
+## Version: 2.5.10-tbcc
+## IconTexture: Interface\AddOns\nibRealUI\Media\Icon
+## LoadWith: Blizzard_CompactRaidFrames
+RealUI_PreLoads.lua

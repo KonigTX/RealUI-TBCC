@@ -1,0 +1,17 @@
+## Interface: 20504
+## Title: RealUI Inventory
+## Category: RealUI
+## Notes: Categorized bags designed for RealUI
+## Author: Gethe, Hanshi
+## Version: 2.5.10-tbcc
+## IconTexture: Interface\AddOns\nibRealUI\Media\Icon
+## RequiredDeps: nibRealUI
+## SavedVariables: RealUI_InventoryDB
+
+Compat.lua
+RealUI_Inventory.lua
+Blizz.lua
+FilterData.lua
+Filters.lua
+Slots.lua
+Bags.lua

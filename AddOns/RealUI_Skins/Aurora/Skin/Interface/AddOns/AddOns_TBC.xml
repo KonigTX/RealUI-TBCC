@@ -1,0 +1,35 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
+
+    <!--
+        TBCC Anniversary Compatible Addon Skins
+
+        These skins are specifically designed for TBC Classic frames.
+        Key differences from Retail:
+        - No NineSlice system (frames use SetBackdrop directly)
+        - No GetBackdropTexture on vanilla frames
+        - Simpler frame hierarchies with explicit global names
+        - Missing modern widgets and APIs
+
+        See docs/porting-context/ for detailed compatibility notes.
+    -->
+
+    <!-- Blizzard_UIPanels_Game - Core UI Frames -->
+    <Script file="Blizzard_UIPanels_Game\TBC\CharacterFrame.lua"/>
+    <Script file="Blizzard_UIPanels_Game\TBC\PaperDollFrame.lua"/>
+    <Script file="Blizzard_UIPanels_Game\TBC\PaperDollEnhancements.lua"/>
+    <Script file="Blizzard_UIPanels_Game\TBC\GossipFrame.lua"/>
+    <Script file="Blizzard_UIPanels_Game\TBC\QuestFrame.lua"/>
+    <Script file="Blizzard_UIPanels_Game\TBC\QuestLogFrame.lua"/>
+    <Script file="Blizzard_UIPanels_Game\TBC\InspectFrame.lua"/>
+    <Script file="Blizzard_UIPanels_Game\TBC\FriendsFrame.lua"/>
+    <Script file="Blizzard_UIPanels_Game\TBC\SpellBookFrame.lua"/>
+    <Script file="Blizzard_UIPanels_Game\TBC\MerchantFrame.lua"/>
+    <Script file="Blizzard_UIPanels_Game\TBC\MailFrame.lua"/>
+    <Script file="Blizzard_UIPanels_Game\TBC\BankFrame.lua"/>
+    <Script file="Blizzard_UIPanels_Game\TBC\MacroFrame.lua"/>
+    <Script file="Blizzard_UIPanels_Game\TBC\TradeFrame.lua"/>
+    <Script file="Blizzard_UIPanels_Game\TBC\LootFrame.lua"/>
+    <Script file="Blizzard_UIPanels_Game\TBC\TalentFrame.lua"/>
+
+</Ui>

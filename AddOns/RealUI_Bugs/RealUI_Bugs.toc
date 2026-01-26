@@ -1,0 +1,16 @@
+## Interface: 20504
+## Title: RealUI Bugs
+## Category: RealUI
+## Notes: Bug catcher
+## Author: Gethe, Hanshi
+## Version: 2.5.10-tbcc
+## IconTexture: Interface\AddOns\nibRealUI\Media\Icon
+## LoadWith: Blizzard_ChatFrame
+## OptionalDeps: Ace3, LibTextDump-1.0
+## SavedVariables: RealUI_Storage, RealUI_Debug
+
+Init.lua
+
+Libs\Libs.xml
+RealUI_Bugs.lua
+RegionInfo.lua
