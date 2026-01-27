@@ -53,7 +53,7 @@ There are various RealUI features that are still broken. I plan to fix these iss
 
 ## AI Usage
 
-This project is a unique experiment: 100% of the code was ported by AI.
+100% of the code was ported by AI.
 
 I utilized **Claude Code (Opus 4.5)**, **Gemini CLI**, and **Codex** to orchestrate a massive translation of the Retail codebase to the TBCC API.
 
