@@ -1,90 +1,85 @@
-# RealUI for TBC Classic (TBCC)
+# RealUI for TBC Classic Anniversary
 
-A port of the popular [RealUI](https://www.wowinterface.com/downloads/info16068-RealUI.html) addon suite for World of Warcraft: The Burning Crusade Classic.
+A port of the popular [RealUI](https://www.wowinterface.com/downloads/info16068-RealUI.html) addon suite for World of Warcraft: The Burning Crusade Classic Anniversary (2.5.x).
 
-RealUI is a minimalist UI replacement that provides a clean, efficient interface focused on what matters during gameplay. It was my favorite UI in Retail, and this port aims to bring that "at home" feel back to the TBC Classic era.
-
----
-
-## ⚠️ Current Status: Alpha / Playtest
-
-This is a functional but imperfect port.
-
-**Working:** The base RealUI suite -- Welcome screen/wizard, Unit Frames, Bartender, Bags, Menu, AFK Bar, Infobar, Masque skins, and more...
-
-**Broken / W.I.P:** Aurora (the skinning engine) is currently unstable. Some frames may not position correctly or may look "off." This is likely due to conflicts with the modern engine's EditMode backend vs. TBC's lack of it.
-There are various RealUI features that are still broken. I plan to fix these issues in batches -- any LUA errors or bug descriptions will help make that possible.
+RealUI is a minimalist UI replacement focused on clean, efficient gameplay. This port brings that experience to TBC Classic.
 
 ![scr1](https://github.com/user-attachments/assets/59090d62-f932-4a66-922a-898a22c36519)
 ![scr2](https://github.com/user-attachments/assets/5f5e3f85-97e6-4a4c-b712-e7c479707477)
 ![WoWScrnShot_012626_105505](https://github.com/user-attachments/assets/e5960ad4-151b-4448-8d54-f3621a629af8)
 
+---
+
+## Current Status: Beta
+
+The core RealUI experience is functional and actively maintained.
+
+### What Works
+
+- **Core UI** — Unit frames, action bars, minimap, infobar, AFK screen
+- **Setup Wizard** — First-time configuration walks you through setup
+- **Inventory** — Custom bag system with filtering and bank support
+- **Aurora Skins** — Dark, minimal styling for most Blizzard frames
+- **Bundled Addons** — Bartender4, Grid2, Raven, Kui Nameplates, Masque
+
+### Known Limitations
+
+- **Aurora Skins** — Still rough in some areas. Text colors, frame borders, and backgrounds may look off on certain panels. Actively being improved.
+- Some features from Retail RealUI aren't applicable to TBC
 
 ---
 
 ## Installation
 
-1. **Download** this repository (Code → Download ZIP) or clone it:
+1. **Download** — [Code → Download ZIP](https://github.com/KonigTX/RealUI-TBCC/archive/refs/heads/master.zip) or clone:
    ```
    git clone https://github.com/KonigTX/RealUI-TBCC.git
    ```
 
-2. **Extract** the contents of the `AddOns` folder
-
-3. **Copy** all addon folders to your WoW TBC Classic AddOns directory:
+2. **Copy** the contents of `AddOns/` to your WoW directory:
    ```
    World of Warcraft\_anniversary_\Interface\AddOns\
    ```
 
-4. **Verify** your folder structure looks like:
-   ```
-   Interface/AddOns/nibRealUI/
-   Interface/AddOns/nibRealUI_Config/
-   Interface/AddOns/RealUI_Skins/
-   Interface/AddOns/Bartender4/
-   ... (and the rest)
-   ```
-
-5. **Launch** WoW TBC Classic (or `/reload` if already in-game)
-
-6. **Follow** the RealUI setup wizard on first login
+3. **Launch** WoW TBC Classic and follow the setup wizard
 
 ---
 
-## AI Usage
+## Commands
 
-100% of the code was ported by AI.
-
-I utilized **Claude Code (Opus 4.5)**, **Gemini CLI**, and **Codex** to orchestrate a massive translation of the Retail codebase to the TBCC API.
-
-I used autonomous agents to research API changes, plan the overhaul, and execute the code rewrite.
-
-To my delight, the UI loaded the Welcome Screen on the very first run. While it's not perfect -- 1,457 files is a lot for anyone (human or AI) to manage perfectly -- it is now in a "good enough" state for adventurous users to playtest.
-
-**Enjoy!**
+| Command | Description |
+|---------|-------------|
+| `/realui` | RealUI configuration panel |
+| `/bt4` | Bartender4 action bar settings |
+| `/grid2` | Grid2 raid frame settings |
+| `/raven` | Raven buff/debuff settings |
+| `/kui` | Kui Nameplates settings |
 
 ---
 
-## Configuration
+## Reporting Issues
 
-- `/realui` - Open RealUI configuration
-- `/bt4` or `/bartender` - Bartender4 settings
-- `/grid2` - Grid2 raid frame settings
-- `/raven` - Raven aura settings
-- `/kui` - Kui Nameplates settings
+Found a bug? [Open an issue](https://github.com/KonigTX/RealUI-TBCC/issues) with:
+- What happened
+- Steps to reproduce
+- Any Lua errors (copy from chat or use `/console scriptErrors 1`)
 
-## Known Issues
+---
 
-- **Aurora Skins** - Frame skinning is rough; some Blizzard frames may error or display incorrectly
-- **MailFrame** - May error when opening mail
-- **TradeFrame** - Some button textures missing
-- **Frame Movement** - Some frames move, some don't
-- **Bag Frame** - Ctrl+Shift+Alt Right Click to assign a filter bag doesn't work
+## About This Port
+
+This port was created using AI-assisted development with **Claude Code**, **Gemini**, and **Codex** to translate ~1,500 files from the Retail API to TBC Classic.
+
+The UI loaded successfully on the first run — a testament to how far AI tooling has come. Ongoing fixes and improvements are made through the same human-AI collaboration.
+
+---
 
 ## Credits
 
-Thank you to **Nibelheim**, **Gethe**, and **ievil** — without their work, this port wouldn't be possible.
+- **Nibelheim** — Original RealUI creator
+- **Gethe** — Continued RealUI development
+- **ievil** — Contributions to RealUI
 
 ---
 
-*This is an unofficial port for TBC Classic.*
+*Unofficial port for TBC Classic Anniversary. Not affiliated with the original RealUI team.*
