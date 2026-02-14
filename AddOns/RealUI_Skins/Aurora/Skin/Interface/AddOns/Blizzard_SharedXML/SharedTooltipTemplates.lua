@@ -13,20 +13,25 @@ do --[[ FrameXML\SharedTooltipTemplates.lua ]]
     function Hook.SharedTooltip_SetBackdropStyle(self, style, embedded)
         if self:IsForbidden() then return end
         if not (embedded or self.IsEmbedded) then
-            local r, g, b = Color.frame:GetRGB()
-            local a = Util.GetFrameAlpha()
-
-            self.NineSlice:SetCenterColor(r, g, b, a);
+            if self.NineSlice then
+                local r, g, b = Color.frame:GetRGB()
+                local a = Util.GetFrameAlpha()
+                self.NineSlice:SetCenterColor(r, g, b, a);
+            end
         end
     end
 end
 
 do --[[ FrameXML\SharedTooltipTemplates.xml ]]
     function Skin.SharedTooltipTemplate(GameTooltip)
-        if GameTooltip.debug then
-            GameTooltip.NineSlice.debug = GameTooltip.debug
+        if GameTooltip.NineSlice then
+            if GameTooltip.debug then
+                GameTooltip.NineSlice.debug = GameTooltip.debug
+            end
+            if Skin.NineSlicePanelTemplate then
+                Skin.NineSlicePanelTemplate(GameTooltip.NineSlice)
+            end
         end
-        Skin.NineSlicePanelTemplate(GameTooltip.NineSlice)
     end
     function Skin.SharedNoHeaderTooltipTemplate(GameTooltip)
         Skin.SharedTooltipTemplate(GameTooltip)
@@ -34,11 +39,19 @@ do --[[ FrameXML\SharedTooltipTemplates.xml ]]
 
     function Skin.TooltipBackdropTemplate(Frame)
         if not Frame then return end
-        if Frame.debug then
-            Frame.NineSlice.debug = Frame.debug
-        end
-        if Frame.NineSlice then
+
+        -- TBC: Use NineSlice if available (Retail), otherwise use SetBackdrop (TBC)
+        if Frame.NineSlice and Skin.NineSlicePanelTemplate then
+            if Frame.debug then
+                Frame.NineSlice.debug = Frame.debug
+            end
             Skin.NineSlicePanelTemplate(Frame.NineSlice)
+        else
+            -- TBC fallback: Apply backdrop directly
+            local Base = Aurora.Base
+            if Base and Base.SetBackdrop then
+                Base.SetBackdrop(Frame, Color.frame)
+            end
         end
 
         local r, g, b = Color.frame:GetRGB()
@@ -60,5 +73,7 @@ end
 function private.SharedXML.SharedTooltipTemplates()
     if private.disabled.tooltips then return end
 
-    _G.hooksecurefunc("SharedTooltip_SetBackdropStyle", Hook.SharedTooltip_SetBackdropStyle)
+    if _G.SharedTooltip_SetBackdropStyle then
+        _G.hooksecurefunc("SharedTooltip_SetBackdropStyle", Hook.SharedTooltip_SetBackdropStyle)
+    end
 end

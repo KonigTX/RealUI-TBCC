@@ -134,4 +134,71 @@ function private.FrameXML.QuestFrame()
             Skin.FrameTypeButton(btn)
         end
     end
+
+    -- Recolor TBC QuestFrame FontStrings directly
+    local questFrameFonts = {
+        "QuestInfoDescriptionText",
+        "QuestInfoObjectivesText",
+        "QuestInfoTitleHeader",
+        "QuestDescription",
+        "QuestProgressTitleText",
+        "GreetingText",
+        "QuestProgressRequiredItemsText",
+        "QuestProgressRequiredMoneyText",
+    }
+
+    local function RecolorQuestFrameText()
+        -- Set color on named FontStrings
+        for _, fontName in ipairs(questFrameFonts) do
+            local font = _G[fontName]
+            if font and font.SetTextColor then
+                font:SetTextColor(1, 1, 1)
+            end
+        end
+
+        -- Also check QuestInfoRewardsFrame.Header if it exists
+        local rewardsFrame = _G.QuestInfoRewardsFrame
+        if rewardsFrame and rewardsFrame.Header and rewardsFrame.Header.SetTextColor then
+            rewardsFrame.Header:SetTextColor(1, 1, 1)
+        end
+
+        -- Iterate scroll frame regions to catch dynamic text
+        local scrollFrames = {
+            _G.QuestDetailScrollFrame,
+            _G.QuestRewardScrollFrame,
+            _G.QuestProgressScrollFrame,
+            _G.QuestGreetingScrollFrame,
+        }
+
+        for _, scrollFrame in ipairs(scrollFrames) do
+            if scrollFrame then
+                for i = 1, scrollFrame:GetNumRegions() do
+                    local region = select(i, scrollFrame:GetRegions())
+                    if region and region:IsObjectType("FontString") then
+                        region:SetTextColor(1, 1, 1)
+                    end
+                end
+            end
+        end
+    end
+
+    -- Delayed recolor to run AFTER Blizzard's color changes
+    local function DelayedRecolorQuestFrameText()
+        C_Timer.After(0, RecolorQuestFrameText)
+    end
+
+    -- Hook the TBC update functions
+    if _G.QuestFrameGreetingPanel_OnShow then
+        _G.hooksecurefunc("QuestFrameGreetingPanel_OnShow", DelayedRecolorQuestFrameText)
+    end
+
+    if _G.QuestInfo_Display then
+        _G.hooksecurefunc("QuestInfo_Display", DelayedRecolorQuestFrameText)
+    end
+
+    -- Also hook OnShow for initial display
+    QuestFrame:HookScript("OnShow", DelayedRecolorQuestFrameText)
+
+    -- Set initial colors immediately
+    RecolorQuestFrameText()
 end

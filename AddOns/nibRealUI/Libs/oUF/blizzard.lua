@@ -135,10 +135,20 @@ function oUF:DisableBlizzard(unit)
 		if(not isPartyHooked) then
 			isPartyHooked = true
 
-			handleFrame(PartyFrame)
+			-- TBCC: PartyFrame and PartyMemberFramePool don't exist in TBC Classic
+			-- TBC uses PartyMemberFrame1-4 directly
+			if PartyFrame and PartyFrame.PartyMemberFramePool then
+				-- Retail path
+				handleFrame(PartyFrame)
 
-			for frame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
-				handleFrame(frame, true)
+				for frame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
+					handleFrame(frame, true)
+				end
+			else
+				-- TBCC path: hide individual party member frames
+				for i = 1, 4 do
+					handleFrame('PartyMemberFrame' .. i)
+				end
 			end
 
 			for i = 1, MEMBERS_PER_RAID_GROUP do

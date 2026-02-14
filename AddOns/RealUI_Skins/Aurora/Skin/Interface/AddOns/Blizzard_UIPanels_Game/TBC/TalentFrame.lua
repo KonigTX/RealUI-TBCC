@@ -119,6 +119,16 @@ private.AddOns["Blizzard_TalentUI"] = function()
         if tab then
             StripTextures(tab)
             Skin.FrameTypeButton(tab)
+
+            -- Explicitly set tab size and positioning to prevent overlap
+            tab:SetWidth(115)
+            tab:SetHeight(32)
+            tab:ClearAllPoints()
+            if i == 1 then
+                tab:SetPoint("BOTTOMLEFT", TalentFrame, "BOTTOMLEFT", 10, -30)
+            else
+                tab:SetPoint("LEFT", _G["TalentFrameTab"..(i-1)] or _G["PlayerTalentFrameTab"..(i-1)], "RIGHT", 4, 0)
+            end
         end
     end
 

@@ -420,3 +420,13 @@ function eventSpecial.DAMAGE_SPLIT(eventInfo, ...)
     eventInfo.eventType = "DAMAGE"
     return eventPrefix.SPELL(eventInfo, ...)
 end
+
+function eventSpecial.DAMAGE_SHIELD(eventInfo, ...)
+    eventInfo.eventType = "DAMAGE"
+    return eventPrefix.SPELL(eventInfo, ...)
+end
+
+function eventSpecial.DAMAGE_SHIELD_MISSED(eventInfo, ...)
+    eventInfo.eventType = "MISSED"
+    return eventPrefix.SPELL(eventInfo, ...)
+end

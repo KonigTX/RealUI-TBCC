@@ -57,34 +57,27 @@ function private.FrameXML.GossipFrame()
     HideElement(_G, "GossipFramePortraitFrame")
 
     -- Hide border edges
-    HideElement(GossipFrame, "TopEdge")
-    HideElement(GossipFrame, "BottomEdge")
-    HideElement(GossipFrame, "LeftEdge")
-    HideElement(GossipFrame, "RightEdge")
-    HideElement(GossipFrame, "TopLeftCorner")
-    HideElement(GossipFrame, "TopRightCorner")
-    HideElement(GossipFrame, "BottomLeftCorner")
-    HideElement(GossipFrame, "BottomRightCorner")
-    HideElement(GossipFrame, "Center")
-
-    -- Hide border regions
-    HideElement(GossipFrame, "TopBorder")
-    HideElement(GossipFrame, "BottomBorder")
-    HideElement(GossipFrame, "LeftBorder")
-    HideElement(GossipFrame, "RightBorder")
-    HideElement(GossipFrame, "BotLeftCorner")
-    HideElement(GossipFrame, "BotRightCorner")
+    local borderElements = {
+        "TopEdge", "BottomEdge", "LeftEdge", "RightEdge",
+        "TopLeftCorner", "TopRightCorner", "BottomLeftCorner", "BottomRightCorner",
+        "Center", "TopBorder", "BottomBorder", "LeftBorder", "RightBorder",
+        "BotLeftCorner", "BotRightCorner"
+    }
+    for _, name in ipairs(borderElements) do
+        HideElement(GossipFrame, name)
+    end
 
     -- Hide named global textures
-    HideElement(_G, "GossipFrameTopLeftCorner")
-    HideElement(_G, "GossipFrameTopRightCorner")
-    HideElement(_G, "GossipFrameBottomLeftCorner")
-    HideElement(_G, "GossipFrameBottomRightCorner")
-    HideElement(_G, "GossipFrameTopBorder")
-    HideElement(_G, "GossipFrameBottomBorder")
-    HideElement(_G, "GossipFrameLeftBorder")
-    HideElement(_G, "GossipFrameRightBorder")
-    HideElement(_G, "GossipFrameTopTileStreaks")
+    local globalTextures = {
+        "GossipFrameTopLeftCorner", "GossipFrameTopRightCorner",
+        "GossipFrameBottomLeftCorner", "GossipFrameBottomRightCorner",
+        "GossipFrameTopBorder", "GossipFrameBottomBorder",
+        "GossipFrameLeftBorder", "GossipFrameRightBorder",
+        "GossipFrameTopTileStreaks", "GossipFrameBg", "GossipFrameTitleBg"
+    }
+    for _, name in ipairs(globalTextures) do
+        HideElement(_G, name)
+    end
 
     -- Hide Bg and TitleBg
     HideElement(GossipFrame, "Bg")
@@ -106,45 +99,32 @@ function private.FrameXML.GossipFrame()
         StripTextures(GossipFrame.GreetingPanel)
     end
 
-    -- Strip ALL textures from main frame
+    -- Strip textures from main frame (but be careful not to hide everything)
     StripTextures(GossipFrame)
 
     -- Apply Aurora backdrop
     Base.SetBackdrop(GossipFrame, Color.frame)
 
-    -- Skin close button
+    -- Skin close button with TBC-compatible X
     local closeButton = GossipFrame.CloseButton or _G.GossipFrameCloseButton
     if closeButton then
-        Skin.FrameTypeButton(closeButton)
-    end
-
-    -- Skin greeting scroll frame (if it exists)
-    local GossipGreetingScrollFrame = _G.GossipGreetingScrollFrame
-    if GossipGreetingScrollFrame then
-        StripTextures(GossipGreetingScrollFrame)
-        Base.SetBackdrop(GossipGreetingScrollFrame, Color.frame, 0.3)
-    end
-
-    -- Skin gossip option buttons (skin existing ones immediately)
-    for i = 1, _G.NUMGOSSIPBUTTONS or 32 do
-        local button = _G["GossipTitleButton"..i]
-        if button and not button._auroraSkinned then
-            Skin.FrameTypeButton(button)
-            button._auroraSkinned = true
+        if Skin.UIPanelCloseButton then
+            Skin.UIPanelCloseButton(closeButton)
+        else
+            Skin.FrameTypeButton(closeButton)
         end
     end
 
-    -- Hook GossipFrameUpdate if it exists (may not in all TBCC versions)
-    if _G.GossipFrameUpdate then
-        hooksecurefunc("GossipFrameUpdate", function()
-            for i = 1, _G.NUMGOSSIPBUTTONS or 32 do
-                local button = _G["GossipTitleButton"..i]
-                if button and not button._auroraSkinned then
-                    Skin.FrameTypeButton(button)
-                    button._auroraSkinned = true
-                end
-            end
-        end)
+    -- Skin greeting scroll frame
+    local GossipGreetingScrollFrame = _G.GossipGreetingScrollFrame
+    if GossipGreetingScrollFrame then
+        StripTextures(GossipGreetingScrollFrame)
+
+        -- Skin the scrollbar
+        local scrollBar = _G.GossipGreetingScrollFrameScrollBar
+        if scrollBar and Skin.UIPanelScrollBarTBC then
+            Skin.UIPanelScrollBarTBC(scrollBar)
+        end
     end
 
     -- Skin goodbye button
@@ -152,4 +132,93 @@ function private.FrameXML.GossipFrame()
     if GossipFrameGreetingGoodbyeButton then
         Skin.FrameTypeButton(GossipFrameGreetingGoodbyeButton)
     end
+
+    -- Skin gossip option buttons
+    local function SkinGossipButtons()
+        for i = 1, _G.NUMGOSSIPBUTTONS or 32 do
+            local button = _G["GossipTitleButton"..i]
+            if button and not button._auroraSkinned then
+                -- Don't use FrameTypeButton - it strips textures we might need
+                -- Just ensure the text is readable
+                button._auroraSkinned = true
+            end
+        end
+    end
+
+    SkinGossipButtons()
+
+    -- Hook GossipFrameUpdate if it exists
+    if _G.GossipFrameUpdate then
+        hooksecurefunc("GossipFrameUpdate", SkinGossipButtons)
+    end
+
+    -- =============================================================================
+    -- Text Recoloring
+    -- =============================================================================
+    local function RecolorGossipText()
+        -- NPC name/title
+        local titleText = _G.GossipFrameNpcNameText or _G.GossipFrameTitleText
+        if titleText and titleText.SetTextColor then
+            titleText:SetTextColor(1, 1, 1)
+        end
+
+        -- Greeting text
+        local greetingText = _G.GossipGreetingText
+        if greetingText and greetingText.SetTextColor then
+            greetingText:SetTextColor(1, 1, 1)
+        end
+
+        -- Option buttons text
+        for i = 1, _G.NUMGOSSIPBUTTONS or 32 do
+            local button = _G["GossipTitleButton"..i]
+            if button and button:IsShown() then
+                -- Get the text child
+                local buttonText = button.GossipText or button:GetFontString()
+                if buttonText and buttonText.SetTextColor then
+                    buttonText:SetTextColor(1, 1, 1)
+                end
+
+                -- Also check all regions
+                for j = 1, button:GetNumRegions() do
+                    local region = select(j, button:GetRegions())
+                    if region and region:IsObjectType("FontString") then
+                        region:SetTextColor(1, 1, 1)
+                    end
+                end
+
+                -- Add number indicator
+                if not button._auroraNumberLabel then
+                    button._auroraNumberLabel = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+                    button._auroraNumberLabel:SetPoint("LEFT", button, "LEFT", 5, 0)
+                    button._auroraNumberLabel:SetTextColor(1, 0.82, 0)
+                end
+                button._auroraNumberLabel:SetText(i .. ".")
+                button._auroraNumberLabel:Show()
+            elseif button and button._auroraNumberLabel then
+                button._auroraNumberLabel:Hide()
+            end
+        end
+
+        -- Scroll child content
+        local GossipGreetingScrollFrame = _G.GossipGreetingScrollFrame
+        if GossipGreetingScrollFrame then
+            local scrollChild = GossipGreetingScrollFrame:GetScrollChild()
+            if scrollChild then
+                for i = 1, scrollChild:GetNumRegions() do
+                    local region = select(i, scrollChild:GetRegions())
+                    if region and region:IsObjectType("FontString") then
+                        region:SetTextColor(1, 1, 1)
+                    end
+                end
+            end
+        end
+    end
+
+    -- Hook updates - apply text recoloring directly without delay
+    if _G.GossipFrameUpdate then
+        hooksecurefunc("GossipFrameUpdate", RecolorGossipText)
+    end
+
+    GossipFrame:HookScript("OnShow", RecolorGossipText)
+    RecolorGossipText()
 end

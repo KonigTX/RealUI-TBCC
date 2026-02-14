@@ -222,4 +222,18 @@ function private.FrameXML.CharacterFrame()
             end
         end
     end
+
+    -- Hide vanilla debuff frames (BuffFrame and TemporaryEnchantFrame)
+    -- Assumes replacement UI is provided by another addon
+    local BuffFrame = _G.BuffFrame
+    if BuffFrame then
+        BuffFrame:Hide()
+        BuffFrame:UnregisterAllEvents()
+    end
+
+    local TemporaryEnchantFrame = _G.TemporaryEnchantFrame
+    if TemporaryEnchantFrame then
+        TemporaryEnchantFrame:Hide()
+        TemporaryEnchantFrame:UnregisterAllEvents()
+    end
 end

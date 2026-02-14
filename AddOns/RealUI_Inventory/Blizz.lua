@@ -31,16 +31,15 @@ Inventory:RawHook("ToggleAllBags", "ToggleBags", true)
 Inventory:RawHook("OpenAllBags", "OpenBags", true)
 Inventory:RawHook("OpenBag", "OpenBags", true)
 
--- FIXME
--- function Inventory:OpenBank()
---     self.bank:Show()
--- end
--- function Inventory:CloseBank()
---     self.bank:Hide()
--- end
--- _G.BankFrame:UnregisterAllEvents()
--- _G.BankFrame:SetScript("OnShow", nil)
--- _G.BankFrame:SetParent(_G.RealUI.UIHider)
+function Inventory:OpenBank()
+    self.bank:Show()
+end
+function Inventory:CloseBank()
+    self.bank:Hide()
+end
+_G.BankFrame:UnregisterAllEvents()
+_G.BankFrame:SetScript("OnShow", nil)
+_G.BankFrame:SetParent(_G.RealUI.UIHider)
 
 local function MERCHANT_SHOW(event, ...)
     local bag = Inventory.main.bags.junk
@@ -93,20 +92,24 @@ end
 function Inventory:BANKFRAME_OPENED()
     self.atBank = true
     self:OpenBags()
+    self:OpenBank()
 end
 
 function Inventory:BANKFRAME_CLOSED()
     self.atBank = false
+    self:CloseBank()
     self:CloseBags()
 end
 
 function Inventory:GUILDBANKFRAME_OPENED()
     self.atBank = true
     self:OpenBags()
+    self:OpenBank()
 end
 
 function Inventory:GUILDBANKFRAME_CLOSED()
     self.atBank = false
+    self:CloseBank()
     self:CloseBags()
 end
 

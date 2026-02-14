@@ -14,6 +14,8 @@ local defaults = {
         version = 1,
         maxHeight = 0.5,
         sellJunk = true,
+        filtersEnabled = true,
+        combineBags = true, -- When filters disabled: true = one grid, false = separate bag sections
         filters = {},
         assignedFilters = {},
         customFilters = {},
@@ -76,8 +78,14 @@ function private.CalculateJunkProfit(isAtMerchant)
     bag.profit = profit
 end
 
-local settingsVersion = 4
+local settingsVersion = 5
 function private.SanitizeSavedVars(oldVer)
+    if oldVer < 5 then
+        if Inventory.db.global.filtersEnabled == nil then
+            Inventory.db.global.filtersEnabled = true
+        end
+    end
+
     if oldVer < 4 then
         local indexedFilters = Inventory.db.global.filters
         Inventory.db.global.filters = {}

@@ -272,19 +272,40 @@ function MainBagMixin:UpdateSlots()
     local columnHeight, columnBase, prevBag = 0, "main"
     columnHeight, columnBase, prevBag = self:UpdateSize(columnHeight, columnBase)
 
-    local numSkipped = 0
-    for i, filter in Inventory:IndexedFilters() do
-        local bag = self.bags[filter.tag]
-        if bag then
-            if #bag.slots <= 0 then
-                numSkipped = numSkipped + 1
-            else
-                columnHeight, columnBase, prevBag = bag:UpdateSize(columnHeight, columnBase, prevBag)
-                bag:Show()
-                numSkipped = 0
+    local filtersEnabled = Inventory.db.global.filtersEnabled
+    local combineBags = Inventory.db.global.combineBags
+
+    if filtersEnabled then
+        -- Normal filter display
+        local numSkipped = 0
+        for i, filter in Inventory:IndexedFilters() do
+            local bag = self.bags[filter.tag]
+            if bag then
+                if #bag.slots <= 0 then
+                    numSkipped = numSkipped + 1
+                else
+                    columnHeight, columnBase, prevBag = bag:UpdateSize(columnHeight, columnBase, prevBag)
+                    bag:Show()
+                    numSkipped = 0
+                end
+            end
+        end
+    elseif not combineBags then
+        -- Separate bag sections display
+        for k, bagID in self:IterateBagIDs() do
+            local bagTag = "bag" .. bagID
+            local bag = self.bags[bagTag]
+            if bag then
+                if #bag.slots <= 0 then
+                    bag:Hide()
+                else
+                    columnHeight, columnBase, prevBag = bag:UpdateSize(columnHeight, columnBase, prevBag)
+                    bag:Show()
+                end
             end
         end
     end
+    -- When filtersEnabled=false and combineBags=true, everything is in main bag already
 end
 function MainBagMixin:GetNumFreeSlots()
     local totalFree, freeSlots, bagFamily = 0
@@ -434,30 +455,38 @@ function private.AddSlotToBag(slot, bagID)
         assignedTag = "junk"
     end
 
-    if not Inventory:GetFilter(assignedTag) then
-        for i, filter in Inventory:IndexedFilters() do
-            if filter:DoesMatchSlot(slot) then
-                if assignedTag then
-                    if filter:HasPriority(assignedTag) then
+    -- Check if filters are enabled
+    local filtersEnabled = Inventory.db.global.filtersEnabled
+    local combineBags = Inventory.db.global.combineBags
+
+    if filtersEnabled then
+        -- Normal filter matching
+        if not Inventory:GetFilter(assignedTag) then
+            for i, filter in Inventory:IndexedFilters() do
+                if filter:DoesMatchSlot(slot) then
+                    if assignedTag then
+                        if filter:HasPriority(assignedTag) then
+                            assignedTag = filter.tag
+                        end
+                    else
                         assignedTag = filter.tag
                     end
-                else
-                    assignedTag = filter.tag
                 end
             end
         end
+    elseif not combineBags then
+        -- Filters disabled + separate bags mode: use bag-specific tags
+        assignedTag = "bag" .. bagID
+    else
+        -- Filters disabled + combined mode: everything goes to main
+        assignedTag = nil
     end
-    Inventory:debug("assignedTag", assignedTag)
 
-    --[[
-    if slot.item:GetItemID() == 98091 then
-        print("Found item", bagID, slotIndex, assignedTag)
-    end
-    ]]
+    Inventory:debug("assignedTag", assignedTag)
 
     slot.assignedTag = assignedTag or "main"
     -- TBCC: Check if main.bags exists before accessing
-    local bag = (main.bags and main.bags[assignedTag]) or main
+    local bag = (main.bags and main.bags[slot.assignedTag]) or main
 
     tinsert(bag.slots, slot)
     -- TBCC: Check if bagSlots exists before accessing
@@ -570,6 +599,57 @@ function private.CreateFilterBag(main, filter)
     return bag
 end
 
+-- Create bag section frames for separate bag display mode
+function private.CreateBagSections(main)
+    Inventory:debug("private.CreateBagSections", main.bagType)
+
+    -- Bag names for display
+    local bagNames = {
+        [0] = _G.BACKPACK_TOOLTIP or "Backpack",
+        [1] = _G.EQUIP_CONTAINER1 or "Bag 1",
+        [2] = _G.EQUIP_CONTAINER2 or "Bag 2",
+        [3] = _G.EQUIP_CONTAINER3 or "Bag 3",
+        [4] = _G.EQUIP_CONTAINER4 or "Bag 4",
+        -- Bank
+        [-1] = _G.BANK or "Bank",  -- BANK_CONTAINER (main 28 slots)
+        [5] = "Bank Bag 1",
+        [6] = "Bank Bag 2",
+        [7] = "Bank Bag 3",
+        [8] = "Bank Bag 4",
+        [9] = "Bank Bag 5",
+        [10] = "Bank Bag 6",
+    }
+
+    for k, bagID in main:IterateBagIDs() do
+        local tag = "bag" .. bagID
+        local bag = _G.CreateFrame("Frame", "$parent_"..tag, main)
+        _G.Mixin(bag, FilterBagMixin)
+        bag:Init()
+
+        local name = bag:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+        name:SetPoint("TOPLEFT")
+        name:SetPoint("BOTTOMRIGHT", bag, "TOPRIGHT", 0, -bag.marginTop)
+
+        -- Get bag name
+        local bagName = bagNames[bagID] or ("Bag " .. bagID)
+        if bagID > 0 and bagID <= 4 then
+            -- Try to get actual bag name from inventory
+            local bagLink = _G.GetInventoryItemLink("player", _G.ContainerIDToInventoryID and _G.ContainerIDToInventoryID(bagID) or (19 + bagID))
+            if bagLink then
+                bagName = _G.GetItemInfo(bagLink) or bagName
+            end
+        end
+        name:SetText(bagName)
+        name:SetJustifyV("MIDDLE")
+
+        bag.parent = main
+        bag.bagID = bagID
+        bag.bagType = tag
+
+        main.bags[tag] = bag
+    end
+end
+
 -- TBCC: Use simple bag IDs (no ReagentBag, different bank structure)
 local bagInfo = {
     main = {
@@ -580,7 +660,7 @@ local bagInfo = {
     bank = {
         name = "RealUIBank",
         mixin = BankBagMixin,
-        bagIDs = {5, 6, 7, 8, 9, 10}, -- Bank bag slots in TBCC
+        bagIDs = {-1, 5, 6, 7, 8, 9, 10}, -- TBCC: -1 is BANK_CONTAINER (main 28 slots), 5-10 are purchasable bank bags
     },
 }
 
@@ -604,24 +684,25 @@ local function CreateBag(bagType)
     end,
     function(dialog)
         if bagType == "bank" then
-            _G.print("ReportError: BankFrame is not yet supported in Retail 11.2.")
-            -- BankTab Buy here? FIXLATER
-            -- local numSlots, full = _G.GetNumBankSlots()
-            -- if not full then
-            --     local cost = _G.GetBankSlotCost(numSlots)
-            --     _G.GameTooltip:SetOwner(dialog, "ANCHOR_BOTTOMRIGHT")
-            --     _G.GameTooltip_SetTitle(_G.GameTooltip, _G.BANKSLOTPURCHASE_LABEL, nil, true)
-            --     _G.GameTooltip_AddBlankLineToTooltip(_G.GameTooltip)
-
-            --     local text = bagCost .. _G.GetMoneyString(cost)
-            --     if _G.GetMoney() >= cost then
-            --         _G.GameTooltip_AddNormalLine(_G.GameTooltip, text)
-            --     else
-            --         _G.GameTooltip_AddErrorLine(_G.GameTooltip, text)
-            --     end
-
-            --     _G.GameTooltip:Show()
-            -- end
+            -- TBCC: Show bank slot purchase info
+            local numSlots, full = _G.GetNumBankSlots()
+            if not full then
+                local cost = _G.GetBankSlotCost(numSlots)
+                _G.GameTooltip:SetOwner(dialog, "ANCHOR_BOTTOMRIGHT")
+                _G.GameTooltip:SetText(_G.BANKSLOTPURCHASE_LABEL or "Purchase Bank Slot")
+                _G.GameTooltip:AddLine(" ")
+                local costText = _G.GetMoneyString(cost, true)
+                if _G.GetMoney() >= cost then
+                    _G.GameTooltip:AddLine(costText, 1, 1, 1)
+                else
+                    _G.GameTooltip:AddLine(costText, 1, 0, 0)
+                end
+                _G.GameTooltip:Show()
+            else
+                _G.GameTooltip:SetOwner(dialog, "ANCHOR_BOTTOMRIGHT")
+                _G.GameTooltip:SetText("All bank slots purchased")
+                _G.GameTooltip:Show()
+            end
         end
     end)
 
@@ -838,6 +919,7 @@ local function CreateBag(bagType)
 
     main.bags = {}
     private.CreateBagSlots(main)
+    private.CreateBagSections(main)
 
     main:Hide()
 end
@@ -846,6 +928,6 @@ end
 function private.CreateBags()
     Inventory:debug("private.CreateBags")
     CreateBag("main")
-    -- CreateBag("bank")
+    CreateBag("bank")
     -- CreateBag("warband")
 end

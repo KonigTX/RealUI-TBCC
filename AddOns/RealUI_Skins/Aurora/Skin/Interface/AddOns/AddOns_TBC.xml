@@ -14,6 +14,9 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
         See docs/porting-context/ for detailed compatibility notes.
     -->
 
+    <!-- Blizzard_SharedXML - Shared Templates -->
+    <Script file="Blizzard_SharedXML\SharedTooltipTemplates.lua"/>
+
     <!-- Blizzard_UIPanels_Game - Core UI Frames -->
     <Script file="Blizzard_UIPanels_Game\TBC\CharacterFrame.lua"/>
     <Script file="Blizzard_UIPanels_Game\TBC\PaperDollFrame.lua"/>
@@ -23,6 +26,7 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
     <Script file="Blizzard_UIPanels_Game\TBC\QuestLogFrame.lua"/>
     <Script file="Blizzard_UIPanels_Game\TBC\InspectFrame.lua"/>
     <Script file="Blizzard_UIPanels_Game\TBC\FriendsFrame.lua"/>
+    <Script file="Blizzard_UIPanels_Game\TBC\LFGFrame.lua"/>
     <Script file="Blizzard_UIPanels_Game\TBC\SpellBookFrame.lua"/>
     <Script file="Blizzard_UIPanels_Game\TBC\MerchantFrame.lua"/>
     <Script file="Blizzard_UIPanels_Game\TBC\MailFrame.lua"/>
@@ -30,6 +34,14 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
     <Script file="Blizzard_UIPanels_Game\TBC\MacroFrame.lua"/>
     <Script file="Blizzard_UIPanels_Game\TBC\TradeFrame.lua"/>
     <Script file="Blizzard_UIPanels_Game\TBC\LootFrame.lua"/>
+    <Script file="Blizzard_UIPanels_Game\TBC\GroupLootFrame.lua"/>
     <Script file="Blizzard_UIPanels_Game\TBC\TalentFrame.lua"/>
+
+    <!-- Additional TBC-specific skins for Aurora bugfixes -->
+    <Script file="Blizzard_GameMenu\TBC\Blizzard_GameMenu.lua"/>
+    <Script file="Blizzard_StaticPopup\TBC\Blizzard_StaticPopup.lua"/>
+    <Script file="Blizzard_SharedXML\TBC\SharedBasicControls.lua"/>
+    <Script file="Blizzard_BattlefieldUI\TBC\Blizzard_BattlefieldUI.lua"/>
+    <Script file="Blizzard_UIParent\ChatBubbleTemplates.lua"/>
 
 </Ui>

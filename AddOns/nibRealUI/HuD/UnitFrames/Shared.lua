@@ -667,6 +667,9 @@ function UnitFrames:InitializeLayout()
         for i = 1, #UnitFrames.units do
             UnitFrames.units[i]()
         end
+
+        -- Hide default Blizzard party frames (Grid2 handles group display)
+        oUF:DisableBlizzard('party')
     end)
 end
 

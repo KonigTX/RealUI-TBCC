@@ -12,3 +12,7 @@ desktop.ini
 *~
 .vscode/
 .idea/
+
+# Dev planning artifacts
+PLAN.md
+nul

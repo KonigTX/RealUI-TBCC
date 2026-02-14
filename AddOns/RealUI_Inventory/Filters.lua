@@ -108,6 +108,7 @@ do
         private.Update()
     end
     function FilterMixin:DoesMatchSlot(slot)
+        if not Inventory.db.global.filtersEnabled then return false end
         if not self:IsEnabled() then return false end
         if self.filter then
             return self.filter(slot)
@@ -169,9 +170,10 @@ do
         local filter = _G.Mixin(info, FilterMixin)
 
         private.CreateFilterBag(Inventory.main, filter)
-        -- if filter.tag ~= "new" then
-        --     private.CreateFilterBag(Inventory.bank, filter)
-        -- end
+        -- Create filter bags for bank too (except "new" items filter)
+        if filter.tag ~= "new" and Inventory.bank then
+            private.CreateFilterBag(Inventory.bank, filter)
+        end
 
         Inventory:AddFilter(filter)
         return filter
@@ -280,6 +282,8 @@ tinsert(private.filterList, {
     rank = 0,
     filter = function(slot)
         local itemInfo = _G.C_Container.GetContainerItemInfo(slot:GetBagAndSlot())
+        -- TBCC: itemInfo can be nil for empty slots or bank slots
+        if not itemInfo then return false end
         return itemInfo.quality == _G.Enum.ItemQuality.Poor and not itemInfo.hasNoValue
     end,
 })
@@ -309,6 +313,8 @@ tinsert(private.filterList, {
     rank = 20,
     filter = function(slot)
         local bagID, slotIndex = slot:GetBagAndSlot()
+        -- TBCC: equipSetItems may not have entry for bank container (-1)
+        if not private.equipSetItems[bagID] then return false end
         local isSet = private.equipSetItems[bagID][slotIndex]
         return isSet
     end,
