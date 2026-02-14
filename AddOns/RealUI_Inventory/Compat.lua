@@ -77,16 +77,6 @@ if not _G.C_Container then
         _G.SplitContainerItem(bagID, slotIndex, amount)
     end
 
-    -- SortBags()
-    function _G.C_Container.SortBags()
-        -- TBCC doesn't have automatic bag sorting, do nothing
-    end
-
-    -- SortBankBags()
-    function _G.C_Container.SortBankBags()
-        -- TBCC doesn't have automatic bank sorting, do nothing
-    end
-
     -- IsContainerFiltered(bagID) -> isFiltered
     function _G.C_Container.IsContainerFiltered(bagID)
         -- TBCC doesn't have container filtering in the same way
@@ -100,6 +90,26 @@ if not _G.C_Container then
     end
 
     -- ExpandCurrencyList/GetCurrencyListSize are in C_CurrencyInfo, not C_Container
+end
+
+-- =============================================================================
+-- C_Container API - Individual function fallbacks
+-- These are OUTSIDE the main block because C_Container may exist but be incomplete
+-- =============================================================================
+if _G.C_Container then
+    -- SortBags() - TBCC doesn't have automatic bag sorting
+    if not _G.C_Container.SortBags then
+        function _G.C_Container.SortBags()
+            -- TBCC doesn't have automatic bag sorting, do nothing
+        end
+    end
+
+    -- SortBankBags() - TBCC doesn't have automatic bank sorting
+    if not _G.C_Container.SortBankBags then
+        function _G.C_Container.SortBankBags()
+            -- TBCC doesn't have automatic bank sorting, do nothing
+        end
+    end
 end
 
 -- =============================================================================

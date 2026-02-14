@@ -2,7 +2,7 @@ local _, private = ...
 if not private.isTBC then return end
 
 --[[ Lua Globals ]]
--- luacheck: globals select
+-- luacheck: globals select hooksecurefunc
 
 --[[ Core ]]
 local Aurora = private.Aurora
@@ -132,4 +132,92 @@ function private.FrameXML.MerchantFrame()
     if MerchantFrameScrollFrame then
         Base.SetBackdrop(MerchantFrameScrollFrame, Color.frame, 0.3)
     end
+
+    -- Recolor TBC MerchantFrame FontStrings for readability
+    -- NOTE: Item names keep their rarity colors, only money/UI text is white
+    local function RecolorMerchantText()
+        -- Recolor the frame title
+        local titleText = _G.MerchantFrameTitleText or _G.MerchantNameText
+        if titleText and titleText.SetTextColor then
+            titleText:SetTextColor(1, 1, 1)
+        end
+
+        -- Recolor repair text
+        local repairText = _G.MerchantRepairText
+        if repairText and repairText.SetTextColor then
+            repairText:SetTextColor(1, 1, 1)
+        end
+
+        -- Recolor MerchantItem money text (gold/silver/copper) - NOT item names
+        for i = 1, _G.MERCHANT_ITEMS_PER_PAGE or 12 do
+            -- DO NOT recolor item names - they have rarity colors from Blizzard
+            -- local itemName = _G["MerchantItem"..i.."Name"]
+
+            -- Item slot cost (money text) - make white
+            local itemMoney = _G["MerchantItem"..i.."MoneyFrame"]
+            if itemMoney then
+                -- Money frame children (gold, silver, copper text)
+                for j = 1, itemMoney:GetNumChildren() do
+                    local child = select(j, itemMoney:GetChildren())
+                    if child then
+                        local text = child.Text or _G[child:GetName() and (child:GetName().."Text")]
+                        if text and text.SetTextColor then
+                            text:SetTextColor(1, 1, 1)
+                        end
+                    end
+                end
+                -- Also check direct regions
+                for j = 1, itemMoney:GetNumRegions() do
+                    local region = select(j, itemMoney:GetRegions())
+                    if region and region:IsObjectType("FontString") then
+                        region:SetTextColor(1, 1, 1)
+                    end
+                end
+            end
+
+            -- Alternate cost text (for items that cost other items/currency)
+            local altCurrency = _G["MerchantItem"..i.."AltCurrencyFrame"]
+            if altCurrency then
+                for j = 1, altCurrency:GetNumRegions() do
+                    local region = select(j, altCurrency:GetRegions())
+                    if region and region:IsObjectType("FontString") then
+                        region:SetTextColor(1, 1, 1)
+                    end
+                end
+            end
+        end
+
+        -- Recolor buyback money - but NOT the item name
+        local buybackMoney = _G.MerchantBuyBackItemMoneyFrame
+        if buybackMoney then
+            for j = 1, buybackMoney:GetNumRegions() do
+                local region = select(j, buybackMoney:GetRegions())
+                if region and region:IsObjectType("FontString") then
+                    region:SetTextColor(1, 1, 1)
+                end
+            end
+        end
+
+        -- Page text
+        local pageText = _G.MerchantPageText
+        if pageText and pageText.SetTextColor then
+            pageText:SetTextColor(1, 1, 1)
+        end
+    end
+
+    -- Delayed recolor to run AFTER Blizzard's color changes
+    local function DelayedRecolorMerchantText()
+        C_Timer.After(0, RecolorMerchantText)
+    end
+
+    -- Hook MerchantFrame_Update to reapply colors after Blizzard updates
+    if _G.MerchantFrame_Update then
+        hooksecurefunc("MerchantFrame_Update", DelayedRecolorMerchantText)
+    end
+
+    -- Also hook OnShow for initial display
+    MerchantFrame:HookScript("OnShow", DelayedRecolorMerchantText)
+
+    -- Set initial colors immediately
+    RecolorMerchantText()
 end

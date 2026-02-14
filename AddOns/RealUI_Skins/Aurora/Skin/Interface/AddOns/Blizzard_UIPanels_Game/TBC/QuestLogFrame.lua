@@ -101,6 +101,13 @@ function private.FrameXML.QuestLogFrame()
     -- Apply Aurora backdrop
     Base.SetBackdrop(QuestLogFrame, Color.frame)
 
+    -- Enable dragging for QuestLogFrame
+    QuestLogFrame:SetMovable(true)
+    QuestLogFrame:EnableMouse(true)
+    QuestLogFrame:RegisterForDrag("LeftButton")
+    QuestLogFrame:SetScript("OnDragStart", QuestLogFrame.StartMoving)
+    QuestLogFrame:SetScript("OnDragStop", QuestLogFrame.StopMovingOrSizing)
+
     -- Skin close button
     local closeButton = QuestLogFrame.CloseButton or _G.QuestLogFrameCloseButton
     if closeButton then
@@ -157,4 +164,51 @@ function private.FrameXML.QuestLogFrame()
     HideElement(_G, "QuestLogDetailFrameMaterialTopRight")
     HideElement(_G, "QuestLogDetailFrameMaterialBotLeft")
     HideElement(_G, "QuestLogDetailFrameMaterialBotRight")
+
+    -- Recolor TBC Quest Log FontStrings directly
+    -- These are global FontString objects, not part of the scroll child
+    local questLogFonts = {
+        "QuestLogQuestTitle",
+        "QuestLogQuestDescription",
+        "QuestLogObjectivesText",
+        "QuestLogDescriptionTitle",
+        "QuestLogRewardTitleText",
+        "QuestLogItemChooseText",
+        "QuestLogItemReceiveText",
+        "QuestLogRequiredMoneyText",
+    }
+
+    local function RecolorQuestLogText()
+        -- Set color on named FontStrings
+        for _, fontName in ipairs(questLogFonts) do
+            local font = _G[fontName]
+            if font and font.SetTextColor then
+                font:SetTextColor(1, 1, 1)
+            end
+        end
+
+        -- Also iterate scroll child regions to catch any dynamic text
+        local QuestLogDetailScrollFrameScrollChild = _G.QuestLogDetailScrollFrameScrollChild
+        if QuestLogDetailScrollFrameScrollChild then
+            for i = 1, QuestLogDetailScrollFrameScrollChild:GetNumRegions() do
+                local region = select(i, QuestLogDetailScrollFrameScrollChild:GetRegions())
+                if region and region:IsObjectType("FontString") then
+                    region:SetTextColor(1, 1, 1)
+                end
+            end
+        end
+    end
+
+    -- Hook the TBC function name (QuestLog_UpdateQuestDetails exists in TBC)
+    if _G.QuestLog_UpdateQuestDetails then
+        _G.hooksecurefunc("QuestLog_UpdateQuestDetails", RecolorQuestLogText)
+    end
+
+    -- Also hook QuestLog_Update if it exists (fallback)
+    if _G.QuestLog_Update then
+        _G.hooksecurefunc("QuestLog_Update", RecolorQuestLogText)
+    end
+
+    -- Set initial colors immediately
+    RecolorQuestLogText()
 end

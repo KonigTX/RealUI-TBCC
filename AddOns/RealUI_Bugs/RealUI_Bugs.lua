@@ -268,6 +268,22 @@ function errorFrame:Update()
 end
 
 local lastSeen, threshold = {}, 2
+
+-- Errors to suppress (known Blizzard bugs we can't fix)
+local suppressedErrors = {
+    ["Cannot anchor protected frames"] = true,  -- Blizzard EditMode bug with Minimap
+}
+
+local function ShouldSuppressError(errorObject)
+    local msg = errorObject.message or ""
+    for pattern, _ in pairs(suppressedErrors) do
+        if msg:find(pattern, 1, true) then
+            return true
+        end
+    end
+    return false
+end
+
 function errorFrame:BugGrabber_BugGrabbed(callback, errorObject)
     --[[errorObject = {
         message = sanitizedMessage,
@@ -277,6 +293,12 @@ function errorFrame:BugGrabber_BugGrabbed(callback, errorObject)
         time = date("%Y/%m/%d %H:%M:%S"),
         counter = 1,
     }]]
+
+    -- Skip suppressed errors (known Blizzard bugs)
+    if ShouldSuppressError(errorObject) then
+        return
+    end
+
     --print(errorObject.message)
     local errorID, now = _G.BugGrabber:GetErrorID(errorObject), _G.time()
 

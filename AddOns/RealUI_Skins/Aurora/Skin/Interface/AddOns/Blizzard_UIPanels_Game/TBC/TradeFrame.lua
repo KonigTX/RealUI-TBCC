@@ -2,7 +2,7 @@ local _, private = ...
 if not private.isTBC then return end
 
 --[[ Lua Globals ]]
--- luacheck: globals select
+-- luacheck: globals select hooksecurefunc
 
 --[[ Core ]]
 local Aurora = private.Aurora
@@ -142,4 +142,69 @@ function private.FrameXML.TradeFrame()
             end
         end
     end
+
+    -- Recolor TBC TradeFrame FontStrings for readability
+    local function RecolorTradeText()
+        -- Player and recipient name text
+        local playerName = _G.TradeFramePlayerNameText
+        if playerName and playerName.SetTextColor then
+            playerName:SetTextColor(1, 1, 1)
+        end
+
+        local recipientName = _G.TradeFrameRecipientNameText
+        if recipientName and recipientName.SetTextColor then
+            recipientName:SetTextColor(1, 1, 1)
+        end
+
+        -- Recolor item names in trade slots
+        for i = 1, 7 do
+            local playerItemName = _G["TradePlayerItem"..i.."Name"]
+            if playerItemName and playerItemName.SetTextColor then
+                playerItemName:SetTextColor(1, 1, 1)
+            end
+
+            local recipientItemName = _G["TradeRecipientItem"..i.."Name"]
+            if recipientItemName and recipientItemName.SetTextColor then
+                recipientItemName:SetTextColor(1, 1, 1)
+            end
+        end
+
+        -- Iterate trade frame regions to catch other dynamic text
+        for i = 1, TradeFrame:GetNumRegions() do
+            local region = select(i, TradeFrame:GetRegions())
+            if region and region:IsObjectType("FontString") then
+                region:SetTextColor(1, 1, 1)
+            end
+        end
+
+        -- Also recolor children frame FontStrings (with pcall to handle MoneyFrames and other special frames)
+        for _, child in pairs({TradeFrame:GetChildren()}) do
+            if child.GetRegions then
+                local ok, regions = pcall(function() return {child:GetRegions()} end)
+                if ok and regions then
+                    for _, region in pairs(regions) do
+                        if region and region.IsObjectType and region:IsObjectType("FontString") then
+                            region:SetTextColor(1, 1, 1)
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    -- Delayed recolor to run AFTER Blizzard's color changes
+    local function DelayedRecolorTradeText()
+        C_Timer.After(0, RecolorTradeText)
+    end
+
+    -- Hook TradeFrame_Update to reapply colors after Blizzard updates
+    if _G.TradeFrame_Update then
+        hooksecurefunc("TradeFrame_Update", DelayedRecolorTradeText)
+    end
+
+    -- Also hook OnShow for initial display
+    TradeFrame:HookScript("OnShow", DelayedRecolorTradeText)
+
+    -- Set initial colors immediately
+    RecolorTradeText()
 end

@@ -707,10 +707,38 @@ do -- Inventory
                 set = appSet,
                 order = 2,
             },
+            filtersEnabled = {
+                name = "Enable Filters",
+                desc = "Enable or disable all inventory filter functionality. When disabled, items will not be sorted into filter bags.",
+                type = "toggle",
+                get = appGet,
+                set = function(info, value)
+                    appSet(info, value)
+                    Inventory.Update()
+                end,
+                order = 2.5,
+            },
+            combineBags = {
+                name = "Combine Bags",
+                desc = "When filters are disabled: ON = show all items in one combined grid, OFF = show separate sections for each bag.",
+                type = "toggle",
+                disabled = function()
+                    return Inventory.db.global.filtersEnabled
+                end,
+                get = appGet,
+                set = function(info, value)
+                    appSet(info, value)
+                    Inventory.Update()
+                end,
+                order = 2.6,
+            },
             addFilter = {
                 name = L.Inventory_AddFilter,
                 desc = L.Inventory_AddFilterDesc,
                 type = "input",
+                disabled = function()
+                    return not Inventory.db.global.filtersEnabled
+                end,
                 set = function(_, value)
                     local tag = value:lower()
                     AddFilter(Inventory:CreateCustomFilter(tag, value, true))
@@ -730,6 +758,9 @@ do -- Inventory
                 name = _G.FILTERS,
                 type = "group",
                 inline = true,
+                disabled = function()
+                    return not Inventory.db.global.filtersEnabled
+                end,
                 order = 10,
                 args = {
                 }

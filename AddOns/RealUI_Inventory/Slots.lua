@@ -66,19 +66,38 @@ function ItemSlotMixin:Update()
     local quality = item:GetItemQuality()
     _G.SetItemButtonTexture(self, icon)
     _G.SetItemButtonQuality(self, quality, item:GetItemLink())
-    _G.SetItemButtonCount(self, itemInfo.stackCount)
     _G.SetItemButtonDesaturated(self, item:IsItemLocked())
 
+    -- Custom stack count formatting to handle large values
+    local stackCount = itemInfo and itemInfo.stackCount or 1
     if self:GetItemType() == "equipment" then
         self.Count:SetText(self.item:GetCurrentItemLevel())
         if quality and quality > _G.Enum.ItemQuality.Poor then
-            self.Count:SetTextColor(_G.BAG_ITEM_QUALITY_COLORS[quality]:GetRGB())
+            local qualityColor = _G.BAG_ITEM_QUALITY_COLORS and _G.BAG_ITEM_QUALITY_COLORS[quality]
+            if qualityColor and qualityColor.GetRGB then
+                self.Count:SetTextColor(qualityColor:GetRGB())
+            end
         end
         self.Count:Show()
+    elseif stackCount and stackCount > 1 then
+        -- Format stack counts: 1-999 (normal), 1000+ ("1.0k"), 1000000+ ("1.0m")
+        local displayText
+        if stackCount >= 1000000 then
+            displayText = string.format("%.1fm", stackCount / 1000000)
+        elseif stackCount >= 1000 then
+            displayText = string.format("%.1fk", stackCount / 1000)
+        else
+            displayText = tostring(stackCount)
+        end
+        self.Count:SetText(displayText)
+        self.Count:SetTextColor(1, 1, 1)
+        self.Count:Show()
+    else
+        self.Count:Hide()
     end
 
     local questTexture = self.IconQuestTexture
-    if itemQuestInfo.questID then
+    if itemQuestInfo and itemQuestInfo.questID then
         if self._auroraIconBorder then
             self._auroraIconBorder:SetBackdropBorderColor(1, 1, 0)
         end
@@ -404,7 +423,14 @@ end
 function BagSlotMixin:OnClick(button)
     local hadItem = self.isBag and _G.PutItemInBag(self.inventoryID)
     local needsPurchase = self.bankSlotID and self.bankSlotID > _G.GetNumBankSlots()
-    if not hadItem and not needsPurchase then
+
+    -- Show purchase dialog for unpurchased bank bag slots
+    if needsPurchase then
+        _G.StaticPopup_Show("CONFIRM_BUY_BANK_SLOT")
+        return
+    end
+
+    if not hadItem then
         if self.highlight:IsShown() then
             searchBags[self:GetID()] = false
             self.highlight:Hide()
@@ -431,15 +457,27 @@ function private.CreateBagSlots(main)
     local bagSlots, bagType = private.bagSlots, main.bagType
     bagSlots[bagType] = {}
 
-    local bagSlot, previousButton
+    local bagSlot, previousButton, firstBagSlot
     for k, bagID in main:IterateBagIDs() do
         bagSlot = _G.CreateFrame("ItemButton", "$parent_Bag"..bagID, main)
         _G.Mixin(bagSlot, BagSlotMixin)
         bagSlot:Init(bagID)
 
+        -- Fix bag slot sizing and frame level
+        bagSlot:SetSize(32, 32)
+        bagSlot:SetFrameLevel(bagSlot:GetFrameLevel() + 10)
+
         if previousButton then
             bagSlot:SetPoint("TOPLEFT", previousButton, "TOPRIGHT", 5, 0)
+        else
+            -- First bag slot - position off-screen initially (will be shown by ToggleBags)
+            bagSlot:SetPoint("TOPLEFT", _G.UIParent, "TOPRIGHT", 5, 0)
+            firstBagSlot = bagSlot
         end
+
+        -- Explicitly show the bag slot frame
+        bagSlot:Show()
+        bagSlot:Update()
 
         previousButton = bagSlot
         bagSlots[bagType][bagID] = bagSlot

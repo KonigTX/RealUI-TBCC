@@ -101,10 +101,18 @@ function private.FrameXML.SpellBookFrame()
     -- Apply Aurora backdrop to main frame
     Base.SetBackdrop(SpellBookFrame, Color.frame)
 
-    -- Skin close button
+    -- Skin close button with visible X
     local closeButton = SpellBookFrame.CloseButton or _G.SpellBookFrameCloseButton
     if closeButton then
         Skin.FrameTypeButton(closeButton)
+        -- Create visible X using FontString (reliable in TBCC)
+        local xText = closeButton:CreateFontString(nil, "OVERLAY")
+        xText:SetFont(_G.STANDARD_TEXT_FONT or "Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
+        xText:SetPoint("CENTER", 0, 1)
+        xText:SetText("X")
+        xText:SetTextColor(1, 1, 1)
+        closeButton:HookScript("OnEnter", function() xText:SetTextColor(1, 0.2, 0.2) end)
+        closeButton:HookScript("OnLeave", function() xText:SetTextColor(1, 1, 1) end)
     end
 
     -- Skin main tabs
@@ -120,19 +128,36 @@ function private.FrameXML.SpellBookFrame()
     for i = 1, 8 do
         local skillTab = _G["SpellBookSkillLineTab"..i]
         if skillTab then
+            -- Preserve icon texture before skinning
+            local iconTexture = skillTab:GetNormalTexture()
             StripTextures(skillTab)
             Skin.FrameTypeButton(skillTab)
+            -- Restore icon texture after skinning
+            if iconTexture then
+                iconTexture:Show()
+                iconTexture:SetAlpha(1)
+            end
         end
     end
 
-    -- Skin page navigation buttons
+    -- Skin page navigation buttons (save texture path BEFORE skinning destroys it)
     local SpellBookPrevPageButton = _G.SpellBookPrevPageButton
     if SpellBookPrevPageButton then
+        local prevTex = SpellBookPrevPageButton:GetNormalTexture()
+        local prevPath = prevTex and prevTex:GetTexture()
         Skin.FrameTypeButton(SpellBookPrevPageButton)
+        if prevPath then
+            SpellBookPrevPageButton:SetNormalTexture(prevPath)
+        end
     end
 
     local SpellBookNextPageButton = _G.SpellBookNextPageButton
     if SpellBookNextPageButton then
+        local nextTex = SpellBookNextPageButton:GetNormalTexture()
+        local nextPath = nextTex and nextTex:GetTexture()
         Skin.FrameTypeButton(SpellBookNextPageButton)
+        if nextPath then
+            SpellBookNextPageButton:SetNormalTexture(nextPath)
+        end
     end
 end
