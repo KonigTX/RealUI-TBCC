@@ -50,7 +50,7 @@ The core RealUI experience is functional and actively maintained.
 | Command | Description |
 |---------|-------------|
 | `/realui` | RealUI configuration panel |
-| `/bt4` | Bartender4 action bar settings |
+| `/bt` | Bartender4 action bar settings |
 | `/grid2` | Grid2 raid frame settings |
 | `/raven` | Raven buff/debuff settings |
 | `/kui` | Kui Nameplates settings |
